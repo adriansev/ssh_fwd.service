@@ -3,16 +3,16 @@ Systemd service for ssh port forwards
 
 # USER usage
 
-enable persistent processes for user
+enable persistent processes for user   
 'sudo loginctl enable-linger <user>'
 
-systemd user location is ~/.config/systemd/user/
-'cp <service file> ~/.config/systemd/user/'
+systemd user location is ~/.config/systemd/user/   
+'cp <service file> ~/.config/systemd/user/'   
 
 systemctl --user enable ssh-fwd@my_configuration
 
-user configurations are expected in ~/.ssh/port-fwd.d/
-the configuration have the following format :
+user configurations are expected in ~/.ssh/port-fwd.d/   
+the configuration have the following format :   
 >TARGET=-p custom_port user@host
 >PORT_LOCAL=local_port
 >PORT_REMOTE=remote_port
