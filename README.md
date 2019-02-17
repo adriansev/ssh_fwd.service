@@ -7,7 +7,7 @@ enable persistent processes for user
 >sudo loginctl enable-linger <user>
 
 systemd user location is ~/.config/systemd/user/   
->cp <service file> ~/.config/systemd/user/   
+>cp ssh-fw@.service ~/.config/systemd/user/  
 
 add service to systemd --user services autostart
 >systemctl --user enable ssh-fwd@my_configuration
