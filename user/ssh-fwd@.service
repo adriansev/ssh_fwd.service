@@ -1,0 +1,23 @@
+[Unit]
+Description=Setup a secure port forward to %I
+After=network.target
+AssertPathExists=%h/.ssh/port-fwd.d/%i.conf
+
+[Service]
+EnvironmentFile=%h/.ssh/port-fwd.d/%i.conf
+
+ExecStart=/usr/bin/ssh \
+-NTC -L localhost:${PORT_LOCAL}:localhost:${PORT_REMOTE} \
+-o ServerAliveInterval=10 -o ServerAliveCountMax=6 -o ExitOnForwardFailure=yes -o ControlMaster=no $OPTS \
+$TARGET
+
+# Restart every >2 seconds to avoid StartLimitInterval failure
+RestartSec=300
+Restart=always
+
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
+
