@@ -7,7 +7,7 @@ AssertPathExists=%h/.ssh/port-fwd.d/%i.conf
 EnvironmentFile=%h/.ssh/port-fwd.d/%i.conf
 
 ExecStart=/usr/bin/ssh \
--NTC -L localhost:${PORT_LOCAL}:localhost:${PORT_REMOTE} \
+-nNTC -L localhost:${PORT_LOCAL}:localhost:${PORT_REMOTE} \
 -o ServerAliveInterval=10 -o ServerAliveCountMax=6 -o ExitOnForwardFailure=yes -o ControlMaster=no $OPTS \
 $TARGET
 
