@@ -1,0 +1,53 @@
+#!/bin/bash
+
+BRANCH="master"
+
+GIT_USER="https://raw.githubusercontent.com/adriansev"
+REPO="ssh_fwd.service"
+LOCATION="${GIT_USER}/${REPO}"
+
+CURL='curl -fkLsS -o'
+MYID=$(id -u)
+
+
+if [[ "${MYID}" == "0" ]]; then
+  SYSTEMD_DIR="/etc/systemd/system/"
+  CFGDIR="/etc/port-fwd.d/"
+
+  mkdir -p "${SYSTEMD_DIR}" "${CFGDIR}"
+  ${CURL} ${SYSTEMD_DIR}/ssh-fwd@.service   ${LOCATION}/${BRANCH}/root/ssh-fwd%40.service
+  ${CURL} ${SYSTEMD_DIR}/ssh-proxy@.service ${LOCATION}/${BRANCH}/root/ssh-proxy%40.service
+  chmod 664 ${SYSTEMD_DIR}/ssh-fwd@.service ${SYSTEMD_DIR}/ssh-proxy@.service
+  systemctl daemon-reload
+else
+  SYSTEMD_DIR="~/.config/systemd/user/"
+  CFGDIR="~/.ssh/port-fwd.d/"
+
+  mkdir -p "${SYSTEMD_DIR}" "${CFGDIR}"
+  ${CURL} ${SYSTEMD_DIR}/ssh-fwd@.service   ${LOCATION}/${BRANCH}/user/ssh-fwd%40.service
+  ${CURL} ${SYSTEMD_DIR}/ssh-proxy@.service ${LOCATION}/${BRANCH}/user/ssh-proxy%40.service
+  chmod 664 ${SYSTEMD_DIR}/ssh-fwd@.service ${SYSTEMD_DIR}/ssh-proxy@.service
+  systemctl --user daemon-reload
+
+  echo "To enable processes to survive the logout of the user (not appliable to root) run:"
+  echo "sudo loginctl enable-linger $(id -nu)"
+  echo
+fi
+
+echo "Now add in ${CFGDIR} directory a config file with the form of:
+TARGET=-p custom_port user@host # or ssh alias defined in .ssh/config
+PORT_LOCAL=local_port           # local listening port, it will bind to localhost for security reasons
+PORT_REMOTE=remote_port         # not appliable to ssh-proxy, it will be ignored
+OPTS=                           # any other ssh options like -i /path_to_other_identity_file/id_custom
+                                # -J jump_user@jumhost_fqdn:jumphost_port
+
+and now you can do:
+systemctl --user start ssh-fwd@my_configuration
+or for root :
+systemctl start ssh-fwd@my_configuration
+
+use enable for autostart
+systemctl --user enable ssh-fwd@my_configuration
+or for root :
+systemctl enable ssh-fwd@my_configuration
+"
