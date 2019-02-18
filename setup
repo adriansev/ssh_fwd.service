@@ -20,8 +20,8 @@ if [[ "${MYID}" == "0" ]]; then
   chmod 664 ${SYSTEMD_DIR}/ssh-fwd@.service ${SYSTEMD_DIR}/ssh-proxy@.service
   systemctl daemon-reload
 else
-  SYSTEMD_DIR="~/.config/systemd/user/"
-  CFGDIR="~/.ssh/port-fwd.d/"
+  SYSTEMD_DIR="${HOME}/.config/systemd/user/"
+  CFGDIR="${HOME}/.ssh/port-fwd.d/"
 
   mkdir -p "${SYSTEMD_DIR}" "${CFGDIR}"
   ${CURL} ${SYSTEMD_DIR}/ssh-fwd@.service   ${LOCATION}/${BRANCH}/user/ssh-fwd%40.service
