@@ -6,12 +6,15 @@ AssertPathExists=%h/.ssh/port-fwd.d/%i.conf
 [Service]
 EnvironmentFile=%h/.ssh/port-fwd.d/%i.conf
 
-ExecStart=/usr/bin/ssh -q \
--nNTC -L localhost:${PORT_LOCAL}:localhost:${PORT_REMOTE} \
+ExecStartPre=/usr/bin/kill $(/usr/bin/lsof -ti TCP:${PORT_LOCAL} -sTCP:LISTEN)
+
+ExecStart=/usr/bin/ssh \
+-NTC -L localhost:${PORT_LOCAL}:localhost:${PORT_REMOTE} \
 -o ServerAliveInterval=3 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -o ControlMaster=no ${OPTS} \
 $TARGET
 
-# Restart every >2 seconds to avoid StartLimitInterval failure
+ExecStop=/usr/bin/kill $(/usr/bin/lsof -ti TCP:${PORT_LOCAL} -sTCP:LISTEN)
+
 RestartSec=0.5
 Restart=on-failure
 
